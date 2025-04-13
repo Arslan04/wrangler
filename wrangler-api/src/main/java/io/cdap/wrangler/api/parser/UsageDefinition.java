@@ -182,10 +182,11 @@ public final class UsageDefinition implements Serializable {
      * @param name of the token in the definition of a directive.
      * @param type of the token to be extracted.
      */
-    public void define(String name, TokenType type) {
+    public Builder define(String name, TokenType type) {
       TokenDefinition spec = new TokenDefinition(name, type, null, currentOrdinal, Optional.FALSE);
       currentOrdinal++;
       tokens.add(spec);
+      return this;
     }
 
     /**

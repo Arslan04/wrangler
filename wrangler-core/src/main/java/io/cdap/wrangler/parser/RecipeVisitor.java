@@ -16,12 +16,23 @@
 
 package io.cdap.wrangler.parser;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.antlr.v4.runtime.ParserRuleContext;
+import org.antlr.v4.runtime.misc.Interval;
+import org.antlr.v4.runtime.tree.ParseTree;
+import org.antlr.v4.runtime.tree.TerminalNode;
+
 import io.cdap.wrangler.api.LazyNumber;
 import io.cdap.wrangler.api.RecipeSymbol;
 import io.cdap.wrangler.api.SourceInfo;
 import io.cdap.wrangler.api.Triplet;
 import io.cdap.wrangler.api.parser.Bool;
 import io.cdap.wrangler.api.parser.BoolList;
+import io.cdap.wrangler.api.parser.ByteSize;
 import io.cdap.wrangler.api.parser.ColumnName;
 import io.cdap.wrangler.api.parser.ColumnNameList;
 import io.cdap.wrangler.api.parser.DirectiveName;
@@ -33,16 +44,8 @@ import io.cdap.wrangler.api.parser.Properties;
 import io.cdap.wrangler.api.parser.Ranges;
 import io.cdap.wrangler.api.parser.Text;
 import io.cdap.wrangler.api.parser.TextList;
+import io.cdap.wrangler.api.parser.TimeDuration;
 import io.cdap.wrangler.api.parser.Token;
-import org.antlr.v4.runtime.ParserRuleContext;
-import org.antlr.v4.runtime.misc.Interval;
-import org.antlr.v4.runtime.tree.ParseTree;
-import org.antlr.v4.runtime.tree.TerminalNode;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * This class <code>RecipeVisitor</code> implements the visitor pattern
@@ -64,7 +67,7 @@ import java.util.Map;
  * that is returned by this function.</p>
  */
 public final class RecipeVisitor extends DirectivesBaseVisitor<RecipeSymbol.Builder> {
-  private RecipeSymbol.Builder builder = new RecipeSymbol.Builder();
+  private final RecipeSymbol.Builder builder = new RecipeSymbol.Builder();
 
   /**
    * Returns a <code>RecipeSymbol</code> for the recipe being parsed. This
@@ -97,6 +100,8 @@ public final class RecipeVisitor extends DirectivesBaseVisitor<RecipeSymbol.Buil
     return super.visitIdentifier(ctx);
   }
 
+
+
   /**
    * A Directive can include properties (which are a collection of key and value pairs),
    * this method extracts that token that is being identified as token of type <code>Properties</code>.
@@ -121,6 +126,19 @@ public final class RecipeVisitor extends DirectivesBaseVisitor<RecipeSymbol.Buil
     builder.addToken(new Properties(props));
     return builder;
   }
+  @Override
+   public RecipeSymbol.Builder visitValue(DirectivesParser.ValueContext ctx) {
+    String text = ctx.getText();
+
+    if (ctx.BYTE_SIZE() != null) {
+        builder.addToken((Token) new ByteSize(text));
+    } else if (ctx.TIME_DURATION() != null) {
+        builder.addToken((Token) new TimeDuration(text));
+    }
+
+    return builder;
+  }
+
 
   /**
    * A Pragma is an instruction to the compiler to dynamically load the directives being specified
@@ -295,7 +313,7 @@ public final class RecipeVisitor extends DirectivesBaseVisitor<RecipeSymbol.Buil
     List<TerminalNode> bools = ctx.Bool();
     List<Boolean> booleans = new ArrayList<>();
     for (TerminalNode bool : bools) {
-      booleans.add(Boolean.parseBoolean(bool.getText()));
+      booleans.add(Boolean.valueOf(bool.getText()));
     }
     builder.addToken(new BoolList(booleans));
     return builder;

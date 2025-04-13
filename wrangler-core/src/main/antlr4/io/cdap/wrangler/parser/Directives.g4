@@ -140,8 +140,14 @@ numberRange
  ;
 
 value
- : String | Number | Column | Bool
- ;
+  : String       
+  | Number       
+  | Column      
+  | Bool        
+  | BYTE_SIZE   
+  | TIME_DURATION 
+  ;
+
 
 ecommand
  : '!' Identifier
@@ -273,6 +279,15 @@ String
  : '\'' ( EscapeSequence | ~('\'') )* '\''
  | '"'  ( EscapeSequence | ~('"') )* '"'
  ;
+
+BYTE_SIZE
+  : [0-9]+ ( 'KB' | 'MB' | 'GB' | 'TB' )
+  ;
+
+TIME_DURATION
+  : [0-9]+ ( 'ms' | 's' | 'm' | 'h' | 'd' )
+  ;
+
 
 EscapeSequence
    :   '\\' ('b'|'t'|'n'|'f'|'r'|'"'|'\''|'\\')
