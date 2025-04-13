@@ -1,0 +1,37 @@
+
+1. Grammar Modification & ANTLR
+- "Given Wrangler’s Directives.g4 grammar, how do I extend the value rule to accept values like '10MB', '500KB', '1.5s', or '750ms' while ensuring the existing parsing of numeric and string tokens isn’t broken?"
+- "Show me ANTLR lexer rules that can match time durations like '5ms', '2.5s', '1h', and byte sizes like '20KB', '1.5GB'. The grammar should be case-insensitive and handle floating-point and integer values."
+- "How do I add BYTE_SIZE and TIME_DURATION tokens to the Directives.g4 grammar and propagate them through to the generated visitor methods in ANTLR?"
+
+2. ByteSize & TimeDuration Utility Classes
+- "Generate a robust Java class that can parse byte-size strings like '2MB', '512kb', '1.2GB' and return values in canonical bytes using both 1024- and 1000-based conversions."
+- "Design a Java utility that can parse time strings like '1.5s', '250ms', '2h' and return time in milliseconds and nanoseconds. Also provide a conversion method to any desired unit like seconds, minutes, hours."
+- "Ensure case-insensitive parsing and reject invalid formats like '123xyz' or '1.5ss'. Add a regex-based validator."
+
+3. Token Parsing Logic (Parser Rule Visit Methods)
+- "In the Wrangler visitor pattern for directives, how do I correctly extract and inject new token types like ByteSize and TimeDuration from the ANTLR parse tree into the TokenGroup?"
+- "How can I write a custom visitByteSizeArg() method that converts '2MB' into a ByteSize token object and handles both string and numeric inputs uniformly?"
+
+4. Directive Implementation (aggregate-stats)
+- "Design a Wrangler directive that aggregates total data transfer size and total request duration. It should accept optional unit specifiers and support both total and average modes using ExecutorContext.Store."
+- "How do I use ExecutorContext to persist cumulative values across rows in an aggregate Wrangler directive?"
+- "Provide an implementation of a Wrangler directive that supports arguments like :sourceSize :sourceTime total_size_mb total_time_sec outputUnit=MB timeUnit=sec mode=avg and validates them during initialization."
+
+5. Advanced Unit Tests
+- "Write parameterized JUnit test cases to verify parsing of byte sizes and time durations including edge cases like 0KB, 1.23GB, 999ms, and invalid strings like '1.5XYZ'."
+- "Provide unit tests for a directive that aggregates ByteSize and TimeDuration tokens. Test cases should include different units (MB, KB, GB, ms, s), total and average modes, and output unit conversions."
+- "How do I mock TokenGroup and ExecutorContext in Wrangler to test directive execution across multiple rows?"
+
+6. Debugging & Tooling
+- "I regenerated the grammar using mvn compile but my new visitByteSizeArg() is not being called. How can I debug ANTLR visitor dispatch in Wrangler?"
+- "Explain how to force a clean regeneration of the ANTLR parser/lexer code in Wrangler if mvn compile doesn’t pick up grammar changes."
+- "What Maven profile or flag enables full verbose logging in Wrangler so I can trace directive parsing and execution?"
+
+7. Integration & Recipe Testing
+- "Show me how to write an integration test using TestingRig to simulate recipe execution with sample Row inputs for the aggregate-stats directive."
+- "Provide a sample Wrangler recipe string and dataset that uses the new aggregate-stats directive and verify expected outputs like total_size_mb and total_time_sec."
+
+8. Project Hygiene
+- "Where and how should I document new BYTE_SIZE and TIME_DURATION types in the Wrangler README.md and javadocs so other developers can use them?"
+- "Generate a helpful prompt to commit my Wrangler enhancement work to GitHub, including modified grammar, new directive, utilities, and test cases. Include a README snippet."
